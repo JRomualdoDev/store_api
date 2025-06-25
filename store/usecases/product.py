@@ -38,6 +38,11 @@ class ProductUsecase:
             return_document=pymongo.ReturnDocument.AFTER,
         )
 
+        if not result:
+            raise NotFoundException(message=f"Product not found for update")
+
+        # breakpoint()
+
         return ProductUpdateOut(**result)
 
     async def delete(self, id: UUID) -> bool:

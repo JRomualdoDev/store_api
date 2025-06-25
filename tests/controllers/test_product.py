@@ -23,6 +23,14 @@ async def test_controller_create_should_return_success(client, products_url):
     }
 
 
+async def test_controller_create_should_return_exception(client, products_url):
+    response = await client.post(products_url)
+
+    content = response.json()
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+
 async def test_controller_get_should_return_success(
     client, products_url, product_inserted
 ):
@@ -80,6 +88,19 @@ async def test_controller_patch_should_return_success(
         "quantity": 10,
         "price": "7.500",
         "status": True,
+    }
+
+
+async def test_controller_patch_should_return_notfound(client, products_url):
+    response = await client.patch(
+        f"{products_url}550e8400-e29b-41d4-a716-446655440000", json={"price": "7.500"}
+    )
+
+    content = response.json()
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.json() == {
+        "detail": "The product that you try to update doesn't exist!!!"
     }
 
 
