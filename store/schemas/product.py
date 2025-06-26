@@ -19,6 +19,11 @@ class ProductIn(ProductBase, BaseSchemaMixin): ...
 class ProductOut(ProductIn, OutSchema): ...
 
 
+class ProductFilter(BaseSchemaMixin):
+    min_price: Optional[Decimal] = Field(None, ge=0, description="Preço mínimo")
+    max_price: Optional[Decimal] = Field(None, ge=0, description="Preço máximo")
+
+
 def convert_decimal_128(v):
     return Decimal128(str(v))
 

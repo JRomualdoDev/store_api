@@ -1,7 +1,7 @@
 from typing import List
 
 import pytest
-from tests.factories import product_data
+from tests.factories import product_data, products_data
 from fastapi import status
 
 
@@ -21,6 +21,20 @@ async def test_controller_create_should_return_success(client, products_url):
         "price": "8.500",
         "status": True,
     }
+
+
+async def test_controller_create_products_and_filter_should_return_success(
+    client, products_url
+):
+
+    for product in products_data():
+        await client.post(products_url, json=product)
+
+    response = await client.get(f"{products_url}?min_price=4.5&max_price=6.5")
+    content = response.json()
+
+    assert response.status_code == status.HTTP_200_OK
+    assert len(content) == 3
 
 
 async def test_controller_create_should_return_exception(client, products_url):
@@ -78,10 +92,13 @@ async def test_controller_patch_should_return_success(
 
     content = response.json()
 
+    assert content["created_at"] != content["updated_at"]
+
     del content["created_at"]
     del content["updated_at"]
 
     assert response.status_code == status.HTTP_200_OK
+
     assert content == {
         "id": str(product_inserted.id),
         "name": "Iphone 14 Pro Max",
